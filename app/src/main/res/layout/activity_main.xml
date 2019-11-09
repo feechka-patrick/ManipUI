@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/buttonTurnRight"
+        android:layout_width="100dp"
+        android:layout_height="138dp"
+        android:layout_marginTop="4dp"
+        android:onClick="buttonTurnRightClick"
+        android:text="Поворот направо"
+        app:layout_constraintStart_toEndOf="@+id/buttonTurnLeft"
+        app:layout_constraintTop_toBottomOf="@+id/textDeck" />
+
+    <Button
+        android:id="@+id/buttonTurnLeft"
+        android:layout_width="100dp"
+        android:layout_height="138dp"
+        android:layout_marginStart="62dp"
+        android:layout_marginTop="4dp"
+        android:onClick="buttonTurnLeftClick"
+        android:text="Поворот налево"
+        app:layout_constraintStart_toEndOf="@+id/buttonSecondElbowSpread"
+        app:layout_constraintTop_toBottomOf="@+id/textDeck" />
+
+    <TextView
+        android:id="@+id/textDeck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="123dp"
+        android:layout_marginTop="88dp"
+        android:text="Платформа"
+        app:layout_constraintStart_toEndOf="@+id/buttonFirstElbowSpread"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonSecondElbowSpread"
+        android:layout_width="133dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="41dp"
+        android:onClick="buttonSecondElbowSpreadClick"
+        android:text="Разогнуть"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textSecondElbow" />
+
+    <TextView
+        android:id="@+id/textSecondElbow"
+        android:layout_width="wrap_content"
+        android:layout_height="19dp"
+        android:layout_marginStart="55dp"
+        android:text="Второй локоть"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonFirstElbowSlide" />
+
+    <Button
+        android:id="@+id/buttonSecondElbowSlide"
+        android:layout_width="133dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="41dp"
+        android:onClick="buttonSecondElbowSlideClick"
+        android:text="Согнуть"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonSecondElbowSpread" />
+
+    <Button
+        android:id="@+id/buttonFirstElbowSlide"
+        android:layout_width="133dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="41dp"
+        android:onClick="buttonFirstElbowSlideClick"
+        android:text="Согнуть"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonFirstElbowSpread" />
+
+    <Button
+        android:id="@+id/buttonOpen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="57dp"
+        android:onClick="buttonOpenClick"
+        android:text="Открыть"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textCloseOpenManip" />
+
+    <Button
+        android:id="@+id/buttonClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="57dp"
+        android:onClick="buttonCloseClick"
+        android:text="Закрыть"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonOpen" />
+
+    <TextView
+        android:id="@+id/textCloseOpenManip"
+        android:layout_width="wrap_content"
+        android:layout_height="19dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="84dp"
+        android:text="Ковш"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textFirstElbow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="55dp"
+        android:layout_marginTop="27dp"
+        android:text="Первый локоть"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonFirstElbowSpread"
+        android:layout_width="133dp"
+        android:layout_height="66dp"
+        android:layout_marginStart="41dp"
+        android:onClick="buttonFirstElbowSpreadClick"
+        android:text="Разогнуть"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textFirstElbow" />
+
+    <TextView
+        android:id="@+id/textStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="155dp"
+        android:text="Текущий статус:"
+        app:layout_constraintStart_toEndOf="@+id/buttonTurnRight"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textCurrentStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="29dp"
+        android:text="Простаивание"
+        app:layout_constraintStart_toEndOf="@+id/buttonTurnRight"
+        app:layout_constraintTop_toBottomOf="@+id/textStatus" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
