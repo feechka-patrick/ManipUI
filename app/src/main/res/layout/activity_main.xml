@@ -6,6 +6,40 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        android:id="@+id/textPosZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/textZ"
+        app:layout_constraintTop_toBottomOf="@+id/textPosY" />
+
+    <TextView
+        android:id="@+id/textPosY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/textY"
+        app:layout_constraintTop_toBottomOf="@+id/textPosX" />
+
+    <TextView
+        android:id="@+id/textZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="Z:"
+        app:layout_constraintStart_toEndOf="@+id/buttonTurnRight"
+        app:layout_constraintTop_toBottomOf="@+id/textY" />
+
+    <TextView
+        android:id="@+id/textY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:text="Y:"
+        app:layout_constraintStart_toEndOf="@+id/buttonTurnRight"
+        app:layout_constraintTop_toBottomOf="@+id/textX" />
+
     <Button
         android:id="@+id/buttonTurnRight"
         android:layout_width="100dp"
@@ -144,5 +178,32 @@
         android:text="Простаивание"
         app:layout_constraintStart_toEndOf="@+id/buttonTurnRight"
         app:layout_constraintTop_toBottomOf="@+id/textStatus" />
+
+    <TextView
+        android:id="@+id/textPosHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="4dp"
+        android:text="Позиция"
+        app:layout_constraintStart_toEndOf="@+id/buttonTurnRight"
+        app:layout_constraintTop_toBottomOf="@+id/textCurrentStatus" />
+
+    <TextView
+        android:id="@+id/textX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="29dp"
+        android:text="X:"
+        app:layout_constraintStart_toEndOf="@+id/buttonTurnRight"
+        app:layout_constraintTop_toBottomOf="@+id/textPosHeader" />
+
+    <TextView
+        android:id="@+id/textPosX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        app:layout_constraintStart_toEndOf="@+id/textX"
+        app:layout_constraintTop_toBottomOf="@+id/textPosHeader" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
