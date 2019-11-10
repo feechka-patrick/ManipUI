@@ -1,15 +1,18 @@
 package com.example.manipui;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import org.w3c.dom.Text;
-import static java.lang.Thread.sleep;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -26,27 +29,23 @@ public class MainActivity extends AppCompatActivity{
     public Button buttonClose;
 
     //управление первым коленом
-    public boolean FirstElbowMoveUp = false;
-    public boolean FirstElbowMoveDown = false;
+    private boolean FirstElbowMoveUp = false;
+    private boolean FirstElbowMoveDown = false;
 
     //управление вторым коленом
-    public boolean SecondElbowMoveUp = false;
-    public boolean SecondElbowMoveDown = false;
+    private boolean SecondElbowMoveUp = false;
+    private boolean SecondElbowMoveDown = false;
 
     //управление платформой
-    public boolean PlatformMoveLeft = false;
-    public boolean PlatformMoveRight = false;
+    private boolean PlatformMoveLeft = false;
+    private boolean PlatformMoveRight = false;
 
     //управление ковшом
-    public boolean ClawOpen = false;
-    public boolean ClawClose = false;
+    private boolean ClawOpen = false;
+    private boolean ClawClose = false;
 
-
-    //ПОТОМ УДАЛИТЬ
-    public Position position = new Position();
-    public TextView textPosX;
-    public TextView textPosY;
-    public TextView textPosZ;
+    //подключение блютуз сокета
+    private BluetoothSocket clientSocket;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -54,25 +53,25 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        textStatus = (TextView) findViewById(R.id.textStatus);
-        textCurrentStatus = (TextView) findViewById(R.id.textCurrentStatus);
+        //создание объектов пользовательского интрефейса на экране
+        InterfaceObjectsCreate();
 
-        buttonFirstElbowSpread = (Button) findViewById(R.id.buttonFirstElbowSpread);
-        buttonFirstElbowSlide = (Button) findViewById(R.id.buttonFirstElbowSlide);
-        buttonSecondElbowSpread = (Button) findViewById(R.id.buttonSecondElbowSpread);
-        buttonSecondElbowSlide = (Button) findViewById(R.id.buttonSecondElbowSlide);
-        buttonTurnLeft = (Button) findViewById(R.id.buttonTurnLeft);
-        buttonTurnRight = (Button) findViewById(R.id.buttonTurnRight);
-        buttonOpen = (Button) findViewById(R.id.buttonOpen);
-        buttonClose = (Button) findViewById(R.id.buttonClose);
+        //Включаем bluetooth. Если он уже включен, то ничего не произойдет
+        String enableBlutooth = BluetoothAdapter.ACTION_REQUEST_ENABLE;
+        startActivityForResult(new Intent(enableBlutooth), 0);
+        //задаем блютуз адаптер по умолчанию
+        BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
 
-
-        //ПОТОМ УДАЛИТЬ
-        textPosX = (TextView) findViewById(R.id.textPosX);
-        textPosY = (TextView) findViewById(R.id.textPosY);
-        textPosZ = (TextView) findViewById(R.id.textPosZ);
-
+        //пытаемся подключиться
+        try{
+            BluetoothDevice device = bluetooth.getRemoteDevice("тут должен быть " +
+                    "адрес девайса к которому нужно будет подключиться, но его пока что нет");
+        }catch(Exception e){
+            textCurrentStatus.setText("Ошибка подключения \nк манипулятору");
+        }
 
         /*
         ПРЕВЫЙ ЛОКОТЬ
@@ -81,10 +80,9 @@ public class MainActivity extends AppCompatActivity{
         buttonFirstElbowSpread.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Разгибание первого локтя");
+                        textCurrentStatus.setText("Разгибание \nпервого локтя");
                         FirstElbowMoveUp = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
@@ -102,10 +100,9 @@ public class MainActivity extends AppCompatActivity{
         buttonFirstElbowSlide.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Сгибание первого локтя");
+                        textCurrentStatus.setText("Сгибание \nпервого локтя");
                         FirstElbowMoveDown = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
@@ -127,10 +124,9 @@ public class MainActivity extends AppCompatActivity{
         buttonSecondElbowSpread.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Разгибание второго локтя");
+                        textCurrentStatus.setText("Разгибание \nвторого локтя");
                         SecondElbowMoveUp = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
@@ -148,10 +144,9 @@ public class MainActivity extends AppCompatActivity{
         buttonSecondElbowSlide.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Сгибание второго локтя");
+                        textCurrentStatus.setText("Сгибание \nвторого локтя");
                         SecondElbowMoveDown = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
@@ -173,10 +168,9 @@ public class MainActivity extends AppCompatActivity{
         buttonTurnLeft.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Поворот платформы налево");
+                        textCurrentStatus.setText("Поворот \nплатформы налево");
                         PlatformMoveLeft = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
@@ -194,10 +188,9 @@ public class MainActivity extends AppCompatActivity{
         buttonTurnRight.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Поворот платформы направо");
+                        textCurrentStatus.setText("Поворот \nплатформы направо");
                         PlatformMoveRight = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
@@ -219,7 +212,6 @@ public class MainActivity extends AppCompatActivity{
         buttonOpen.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
                         textCurrentStatus.setText("Открытие ковша");
@@ -240,7 +232,6 @@ public class MainActivity extends AppCompatActivity{
         buttonClose.setOnTouchListener(new View.OnTouchListener(){
             @Override
             public boolean onTouch(View view, MotionEvent event){
-                UpdatePos();
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
                         textCurrentStatus.setText("Закрытие ковша");
@@ -257,8 +248,8 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        //многопоточность
-        //нужно для прослушивания нажатия и удерживания клавиши
+        //Поток для прослушивания нажатия и удерживания клавиши
+        //возможно не нужно
         Thread Listener = new Thread(new Runnable(){
             public void run(){
                 while(true){
@@ -271,30 +262,30 @@ public class MainActivity extends AppCompatActivity{
                     ПЕРВЫЙ ЛОКОТЬ
                      */
                     if(FirstElbowMoveUp) {
-                        position.changeX();
+                        //TODO
                     }
                     if(FirstElbowMoveDown){
-                        position.changeY();
+                        //TODO
                     }
 
                     /*
                     ВТОРОЙ ЛОКОТЬ
                      */
                     if(SecondElbowMoveUp){
-                        position.changeX();
+                        //TODO
                     }
                     if(SecondElbowMoveDown){
-                        position.changeY();
+                        //TODO
                     }
 
                     /*
                     ПЛАТФОРМА
                      */
                     if(PlatformMoveLeft){
-                        position.changeZ();
+                        //TODO
                     }
                     if(PlatformMoveRight){
-                        position.changeZ();
+                        //TODO
                     }
 
                     /*
@@ -352,37 +343,24 @@ public class MainActivity extends AppCompatActivity{
     public void buttonCloseClick(View view){ }
 
 
-    //ПОТОМ УДАЛИТЬ
-    private synchronized void UpdatePos() {
-        textPosX.setText(String.valueOf(position.getX()));
-        textPosY.setText(String.valueOf(position.getY()));
-        textPosZ.setText(String.valueOf(position.getZ()));
+    //создание объектов интерфейса
+    private void InterfaceObjectsCreate(){
+        //создание надписей
+        textStatus = (TextView) findViewById(R.id.textStatus);
+        textCurrentStatus = (TextView) findViewById(R.id.textCurrentStatus);
+
+        //создание кнопок
+        buttonFirstElbowSpread = (Button) findViewById(R.id.buttonFirstElbowSpread);
+        buttonFirstElbowSlide = (Button) findViewById(R.id.buttonFirstElbowSlide);
+        buttonSecondElbowSpread = (Button) findViewById(R.id.buttonSecondElbowSpread);
+        buttonSecondElbowSlide = (Button) findViewById(R.id.buttonSecondElbowSlide);
+        buttonTurnLeft = (Button) findViewById(R.id.buttonTurnLeft);
+        buttonTurnRight = (Button) findViewById(R.id.buttonTurnRight);
+        buttonOpen = (Button) findViewById(R.id.buttonOpen);
+        buttonClose = (Button) findViewById(R.id.buttonClose);
     }
 }
 
-
-//временный класс
-//УДАЛИТЬ
-class Position{
-
-    private long X;
-    private long Y;
-    private long Z;
-
-    public Position(){
-        X = 0;
-        Y = 0;
-        Z = 0;
-    }
-
-    public synchronized void changeX(){X++;}
-    public synchronized void changeY(){Y++;}
-    public synchronized void changeZ(){Z++;}
-
-    public synchronized long getX(){return X;}
-    public synchronized long getY(){return Y;}
-    public synchronized long getZ(){return Z;}
-}
 
 
 
