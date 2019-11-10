@@ -56,8 +56,20 @@ public class MainActivity extends AppCompatActivity{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        //создание объектов пользовательского интрефейса на экране
-        InterfaceObjectsCreate();
+        //создание надписей
+        textStatus = (TextView) findViewById(R.id.textStatus);
+        textCurrentStatus = (TextView) findViewById(R.id.textCurrentStatus);
+
+        //создание кнопок
+        buttonFirstElbowSpread = (Button) findViewById(R.id.buttonFirstElbowSpread);
+        buttonFirstElbowSlide = (Button) findViewById(R.id.buttonFirstElbowSlide);
+        buttonSecondElbowSpread = (Button) findViewById(R.id.buttonSecondElbowSpread);
+        buttonSecondElbowSlide = (Button) findViewById(R.id.buttonSecondElbowSlide);
+        buttonTurnLeft = (Button) findViewById(R.id.buttonTurnLeft);
+        buttonTurnRight = (Button) findViewById(R.id.buttonTurnRight);
+        buttonOpen = (Button) findViewById(R.id.buttonOpen);
+        buttonClose = (Button) findViewById(R.id.buttonClose);
+
 
         //Включаем bluetooth. Если он уже включен, то ничего не произойдет
         String enableBlutooth = BluetoothAdapter.ACTION_REQUEST_ENABLE;
@@ -65,10 +77,15 @@ public class MainActivity extends AppCompatActivity{
         //задаем блютуз адаптер по умолчанию
         BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
 
+        if(bluetooth == null){
+            textCurrentStatus.setText("На устройстве \nотсутсвует \nbluetooth \nмодуль");
+        }
+
         //пытаемся подключиться
         try{
             BluetoothDevice device = bluetooth.getRemoteDevice("тут должен быть " +
                     "адрес девайса к которому нужно будет подключиться, но его пока что нет");
+            textCurrentStatus.setText("Подключение успешно");
         }catch(Exception e){
             textCurrentStatus.setText("Ошибка подключения \nк манипулятору");
         }
@@ -82,13 +99,11 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Разгибание \nпервого локтя");
                         FirstElbowMoveUp = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         FirstElbowMoveUp = false;
                         break;
                 }
@@ -102,13 +117,11 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Сгибание \nпервого локтя");
                         FirstElbowMoveDown = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         FirstElbowMoveDown = false;
                         break;
                 }
@@ -126,13 +139,11 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Разгибание \nвторого локтя");
                         SecondElbowMoveUp = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         SecondElbowMoveUp = false;
                         break;
                 }
@@ -146,13 +157,11 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Сгибание \nвторого локтя");
                         SecondElbowMoveDown = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         SecondElbowMoveDown = false;
                         break;
                 }
@@ -170,13 +179,11 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Поворот \nплатформы налево");
                         PlatformMoveLeft = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         PlatformMoveLeft = false;
                         break;
                 }
@@ -190,13 +197,11 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Поворот \nплатформы направо");
                         PlatformMoveRight = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         PlatformMoveRight = false;
                         break;
                 }
@@ -214,13 +219,11 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Открытие ковша");
                         ClawOpen = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         ClawOpen = false;
                         break;
                 }
@@ -234,73 +237,17 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        textCurrentStatus.setText("Закрытие ковша");
                         ClawClose = true;
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        textCurrentStatus.setText("Простаивание");
                         ClawClose = false;
                         break;
                 }
                 return true;
             }
         });
-
-        //Поток для прослушивания нажатия и удерживания клавиши
-        //возможно не нужно
-        Thread Listener = new Thread(new Runnable(){
-            public void run(){
-                while(true){
-                    /*
-                    Здесь должен подаваться сигнал о движении до тех пор, пока зажата кнопка
-                    но пока что здесь заглушка
-                     */
-
-                    /*
-                    ПЕРВЫЙ ЛОКОТЬ
-                     */
-                    if(FirstElbowMoveUp) {
-                        //TODO
-                    }
-                    if(FirstElbowMoveDown){
-                        //TODO
-                    }
-
-                    /*
-                    ВТОРОЙ ЛОКОТЬ
-                     */
-                    if(SecondElbowMoveUp){
-                        //TODO
-                    }
-                    if(SecondElbowMoveDown){
-                        //TODO
-                    }
-
-                    /*
-                    ПЛАТФОРМА
-                     */
-                    if(PlatformMoveLeft){
-                        //TODO
-                    }
-                    if(PlatformMoveRight){
-                        //TODO
-                    }
-
-                    /*
-                    КОВШ
-                     */
-                    if(ClawOpen){
-                        //Здесь действие
-                    }
-                    if(ClawClose){
-                        //здесь тоже действие
-                    }
-                }
-            }
-        });
-        Listener.start();
     }
 
     /*
@@ -342,23 +289,6 @@ public class MainActivity extends AppCompatActivity{
     //закрывает ковш
     public void buttonCloseClick(View view){ }
 
-
-    //создание объектов интерфейса
-    private void InterfaceObjectsCreate(){
-        //создание надписей
-        textStatus = (TextView) findViewById(R.id.textStatus);
-        textCurrentStatus = (TextView) findViewById(R.id.textCurrentStatus);
-
-        //создание кнопок
-        buttonFirstElbowSpread = (Button) findViewById(R.id.buttonFirstElbowSpread);
-        buttonFirstElbowSlide = (Button) findViewById(R.id.buttonFirstElbowSlide);
-        buttonSecondElbowSpread = (Button) findViewById(R.id.buttonSecondElbowSpread);
-        buttonSecondElbowSlide = (Button) findViewById(R.id.buttonSecondElbowSlide);
-        buttonTurnLeft = (Button) findViewById(R.id.buttonTurnLeft);
-        buttonTurnRight = (Button) findViewById(R.id.buttonTurnRight);
-        buttonOpen = (Button) findViewById(R.id.buttonOpen);
-        buttonClose = (Button) findViewById(R.id.buttonClose);
-    }
 }
 
 
