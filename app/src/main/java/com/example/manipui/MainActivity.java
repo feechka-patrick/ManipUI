@@ -14,6 +14,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
+
 public class MainActivity extends AppCompatActivity{
 
     public TextView textStatus;
@@ -28,24 +32,61 @@ public class MainActivity extends AppCompatActivity{
     public Button buttonOpen;
     public Button buttonClose;
 
-    //управление первым коленом
-    private boolean FirstElbowMoveUp = false;
-    private boolean FirstElbowMoveDown = false;
-
-    //управление вторым коленом
-    private boolean SecondElbowMoveUp = false;
-    private boolean SecondElbowMoveDown = false;
-
-    //управление платформой
-    private boolean PlatformMoveLeft = false;
-    private boolean PlatformMoveRight = false;
-
-    //управление ковшом
-    private boolean ClawOpen = false;
-    private boolean ClawClose = false;
-
+    //задаем блютуз адаптер по умолчанию
+    private BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
     //подключение блютуз сокета
     private BluetoothSocket clientSocket;
+
+
+    // коды для передачи сигналов
+    //
+    // все коды представленны в виде 4-х цифр
+    // 1-я цифра указывает на часть, которя должна двигаться
+    // (1 - первый локоть; 2 - второй локоть; 3 - платформа; 4 - ковш )
+    //
+    // 2-я цифра пока-что никак не использутся
+    //
+    // 3-я цифра указывает на действие
+    // (0 - какое-нибудь действие; 1 - обратное ему действие)
+    //
+    // 4-я цифра используется для старта/остановки действия
+
+    /*
+    СИГНАЛЫ ДЛЯ ПЕРВОГО ЛОКТЯ
+     */
+    private final int FIRST_ELBOW_SPREAD_START  =  1000;
+    private final int FIRST_ELBOW_SPREAD_STOP   =  1001;
+
+    private final int FIRST_ELBOW_SLIDE_START   =  1010;
+    private final int FIRST_ELBOW_SLIDE_STOP    =  1011;
+
+    /*
+    СИГНАЛЫ ДЛЯ ВТОРОГО ЛОКТЯ
+     */
+    private final int SECOND_ELBOW_SPREAD_START =  2000;
+    private final int SECOND_ELBOW_SPREAD_STOP  =  2001;
+
+    private final int SECOND_ELBOW_SLIDE_START  =  2010;
+    private final int SECOND_ELBOW_SLIDE_STOP   =  2011;
+
+    /*
+    СИГНАЛЫ ДЛЯ ПОВОРОТА ПЛАТФОРМЫ
+     */
+    private final int PLATFORM_TURN_LEFT_START  =  3000;
+    private final int PLATFORM_TURN_LEFT_STOP   =  3001;
+
+    private final int PLATFORM_TURN_RIGHT_START =  3010;
+    private final int PLATFORM_TURN_RIGHT_STOP  =  3011;
+
+    /*
+    СИГНАЛЫ ДЛЯ УПРАВЛЕНИЯ КОВШОМ
+     */
+    private final int CLAWS_OPEN_START          =  4000;
+    private final int CLAWS_OPEN_STOP           =  4001;
+
+    private final int CLAWS_CLOSE_START         =  4010;
+    private final int CLAWS_CLOSE_STOP          =  4011;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -70,24 +111,12 @@ public class MainActivity extends AppCompatActivity{
         buttonOpen = (Button) findViewById(R.id.buttonOpen);
         buttonClose = (Button) findViewById(R.id.buttonClose);
 
-
-        //Включаем bluetooth. Если он уже включен, то ничего не произойдет
-        String enableBlutooth = BluetoothAdapter.ACTION_REQUEST_ENABLE;
-        startActivityForResult(new Intent(enableBlutooth), 0);
-        //задаем блютуз адаптер по умолчанию
-        BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
+        checkIsBluetoothEnable();
 
         if(bluetooth == null){
             textCurrentStatus.setText("На устройстве \nотсутсвует \nbluetooth \nмодуль");
-        }
-
-        //пытаемся подключиться
-        try{
-            BluetoothDevice device = bluetooth.getRemoteDevice("тут должен быть " +
-                    "адрес девайса к которому нужно будет подключиться, но его пока что нет");
-            textCurrentStatus.setText("Подключение успешно");
-        }catch(Exception e){
-            textCurrentStatus.setText("Ошибка подключения \nк манипулятору");
+        }else{ //если адаптер есть, то подключаемся
+            connectToManipulator();
         }
 
         /*
@@ -99,12 +128,12 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        FirstElbowMoveUp = true;
+                        sendCommandToManipulator(FIRST_ELBOW_SPREAD_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        FirstElbowMoveUp = false;
+                        sendCommandToManipulator(FIRST_ELBOW_SPREAD_STOP);
                         break;
                 }
                 return true;
@@ -117,12 +146,12 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        FirstElbowMoveDown = true;
+                        sendCommandToManipulator(FIRST_ELBOW_SLIDE_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        FirstElbowMoveDown = false;
+                        sendCommandToManipulator(FIRST_ELBOW_SLIDE_STOP);
                         break;
                 }
                 return true;
@@ -139,12 +168,12 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        SecondElbowMoveUp = true;
+                        sendCommandToManipulator(SECOND_ELBOW_SPREAD_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        SecondElbowMoveUp = false;
+                        sendCommandToManipulator(SECOND_ELBOW_SPREAD_STOP);
                         break;
                 }
                 return true;
@@ -157,12 +186,12 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        SecondElbowMoveDown = true;
+                        sendCommandToManipulator(SECOND_ELBOW_SLIDE_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        SecondElbowMoveDown = false;
+                        sendCommandToManipulator(SECOND_ELBOW_SLIDE_STOP);
                         break;
                 }
                 return true;
@@ -179,12 +208,12 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        PlatformMoveLeft = true;
+                        sendCommandToManipulator(PLATFORM_TURN_LEFT_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        PlatformMoveLeft = false;
+                        sendCommandToManipulator(PLATFORM_TURN_LEFT_STOP);
                         break;
                 }
                 return true;
@@ -197,12 +226,12 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        PlatformMoveRight = true;
+                        sendCommandToManipulator(PLATFORM_TURN_RIGHT_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        PlatformMoveRight = false;
+                        sendCommandToManipulator(PLATFORM_TURN_RIGHT_STOP);
                         break;
                 }
                 return true;
@@ -219,12 +248,12 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        ClawOpen = true;
+                        sendCommandToManipulator(CLAWS_OPEN_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        ClawOpen = false;
+                        sendCommandToManipulator(CLAWS_OPEN_STOP);
                         break;
                 }
                 return true;
@@ -237,17 +266,54 @@ public class MainActivity extends AppCompatActivity{
             public boolean onTouch(View view, MotionEvent event){
                 switch (event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        ClawClose = true;
+                        sendCommandToManipulator(CLAWS_CLOSE_START);
                         break;
                     case MotionEvent.ACTION_MOVE: //движение
                         break;
                     case MotionEvent.ACTION_UP: //отпускание
-                        ClawClose = false;
+                        sendCommandToManipulator(CLAWS_CLOSE_STOP);
                         break;
                 }
                 return true;
             }
         });
+    }
+
+    //проверяет, подключен ли блютуз на телефоне
+    //есни не подключен, то предлагает поключить
+    private void checkIsBluetoothEnable(){
+        if(!bluetooth.isEnabled()){
+            String enableBlutooth = BluetoothAdapter.ACTION_REQUEST_ENABLE;
+            startActivityForResult(new Intent(enableBlutooth), 0);
+        }
+    }
+
+    //попытка подключения
+    private void connectToManipulator(){
+        try{
+            BluetoothDevice device = bluetooth.getRemoteDevice("тут должен быть " +
+                    "адрес девайса к которому нужно будет подключиться, но его пока что нет");
+            //иниициируем соединение с устройством
+            Method m = device.getClass().getMethod(
+                    "createRfcommSocket", new Class[] {int.class});
+            clientSocket = (BluetoothSocket) m.invoke(device, 1);
+            clientSocket.connect();
+
+            textCurrentStatus.setText("Подключение успешно");
+        }catch(Exception e){
+            textCurrentStatus.setText("Ошибка подключения \nк манипулятору");
+        }
+    }
+
+    //метод для передачи данных
+    private void sendCommandToManipulator(int signal){
+        try{
+            //получение выходного потока для передаи данных
+            OutputStream outStream = clientSocket.getOutputStream();
+            outStream.write(signal);
+        }catch(IOException e){
+            textCurrentStatus.setText("Ошибка отправки\nданных");
+        }
     }
 
     /*
