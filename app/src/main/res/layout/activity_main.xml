@@ -132,4 +132,15 @@
         app:layout_constraintStart_toEndOf="@+id/buttonSecondElbowSpread"
         app:layout_constraintTop_toBottomOf="@+id/textStatus" />
 
+    <Button
+        android:id="@+id/buttonEasyMode"
+        android:layout_width="58dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="83dp"
+        android:onClick="buttonEasyModeActivate"
+        android:text="УР"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonSecondElbowSlide" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

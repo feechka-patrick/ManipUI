@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity{
             //получение выходного потока для передаи данных
             OutputStream outStream = clientSocket.getOutputStream();
             outStream.write(signal);
-        }catch(IOException e){
+        }catch(Exception e){
             textCurrentStatus.setText("Ошибка отправки\nданных");
         }
     }
@@ -354,6 +354,13 @@ public class MainActivity extends AppCompatActivity{
 
     //закрывает ковш
     public void buttonCloseClick(View view){ }
+
+
+    //переход в упрщенный режим управления
+    public void buttonEasyModeActivate(View view){
+        Intent intent = new Intent(MainActivity.this, EasyMode.class);
+        startActivity(intent);
+    }
 
 }
 
