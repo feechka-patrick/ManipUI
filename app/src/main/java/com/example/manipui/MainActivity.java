@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 
@@ -36,6 +35,8 @@ public class MainActivity extends AppCompatActivity{
     private BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
     //подключение блютуз сокета
     private BluetoothSocket clientSocket;
+
+    private String MACadress = "00:00:00:00:00";
 
 
     // коды для передачи сигналов
@@ -96,6 +97,14 @@ public class MainActivity extends AppCompatActivity{
         getSupportActionBar().hide();
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        //получаем значение MAC адреса с предыдущего окна, и в случае неудачи заполняет его нулями
+        try{
+            MACadress = getIntent().getExtras().getString("MACadress", "00:00:00:00:00");
+        }
+        catch(NullPointerException e){
+            MACadress = "00:00:00:00:00";
+        }
 
         //создание надписей
         textStatus = (TextView) findViewById(R.id.textStatus);
@@ -291,8 +300,7 @@ public class MainActivity extends AppCompatActivity{
     //попытка подключения
     private void connectToManipulator(){
         try{
-            BluetoothDevice device = bluetooth.getRemoteDevice("тут должен быть " +
-                    "адрес девайса к которому нужно будет подключиться, но его пока что нет");
+            BluetoothDevice device = bluetooth.getRemoteDevice(MACadress);
             //иниициируем соединение с устройством
             Method m = device.getClass().getMethod(
                     "createRfcommSocket", new Class[] {int.class});
@@ -359,6 +367,7 @@ public class MainActivity extends AppCompatActivity{
     //переход в упрщенный режим управления
     public void buttonEasyModeActivate(View view){
         Intent intent = new Intent(MainActivity.this, EasyMode.class);
+        intent.putExtra("MACadress", MACadress);
         startActivity(intent);
     }
 

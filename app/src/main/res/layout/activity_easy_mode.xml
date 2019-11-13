@@ -11,9 +11,25 @@
         android:text="Вернуться обратно" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textMACadress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ЗДЕСЬ БУДЕТ УПРОЩЕННЫЙ РЕЖИМ УПРАВЛЕНИЯ"
-        android:textSize="24sp" />
+        android:text="MAC Адрес манипулятора:"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/editMAC"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="00:00:00:00:00" />
+
+    <Button
+        android:id="@+id/buttonAccept"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickAccept"
+        android:text="Применить" />
+
 </LinearLayout>
