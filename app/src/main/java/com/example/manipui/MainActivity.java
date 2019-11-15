@@ -11,11 +11,9 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.OutputStream;
-import java.lang.reflect.Method;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -35,8 +33,8 @@ public class MainActivity extends AppCompatActivity{
     private BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
     //подключение блютуз сокета
     private BluetoothSocket clientSocket;
-
-    private String MACadress = "00:00:00:00:00";
+    private String MACaddress = "00:00:00:00:00";
+    private UUID myUUID;
 
 
     // коды для передачи сигналов
@@ -73,11 +71,11 @@ public class MainActivity extends AppCompatActivity{
     /*
     СИГНАЛЫ ДЛЯ ПОВОРОТА ПЛАТФОРМЫ
      */
-    private final int PLATFORM_TURN_LEFT_START  =  3000;
-    private final int PLATFORM_TURN_LEFT_STOP   =  3001;
+    private final int PLATFORM_TURN_LEFT_START  =  1;
+    private final int PLATFORM_TURN_LEFT_STOP   =  3;
 
-    private final int PLATFORM_TURN_RIGHT_START =  3010;
-    private final int PLATFORM_TURN_RIGHT_STOP  =  3011;
+    private final int PLATFORM_TURN_RIGHT_START =  2;
+    private final int PLATFORM_TURN_RIGHT_STOP  =  3;
 
     /*
     СИГНАЛЫ ДЛЯ УПРАВЛЕНИЯ КОВШОМ
@@ -98,12 +96,15 @@ public class MainActivity extends AppCompatActivity{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        final String UUID_STRING_WELL_KNOWN_SPP = "00001101-0000-1000-8000-00805F9B34FB";
+        myUUID = UUID.fromString(UUID_STRING_WELL_KNOWN_SPP);
+
         //получаем значение MAC адреса с предыдущего окна, и в случае неудачи заполняет его нулями
         try{
-            MACadress = getIntent().getExtras().getString("MACadress", "00:00:00:00:00");
+            MACaddress = getIntent().getExtras().getString("MACaddress", "00:00:00:00:00");
         }
         catch(NullPointerException e){
-            MACadress = "00:00:00:00:00";
+            MACaddress = "00:00:00:00:00";
         }
 
         //создание надписей
@@ -300,11 +301,9 @@ public class MainActivity extends AppCompatActivity{
     //попытка подключения
     private void connectToManipulator(){
         try{
-            BluetoothDevice device = bluetooth.getRemoteDevice(MACadress);
+            BluetoothDevice device = bluetooth.getRemoteDevice(MACaddress);
             //иниициируем соединение с устройством
-            Method m = device.getClass().getMethod(
-                    "createRfcommSocket", new Class[] {int.class});
-            clientSocket = (BluetoothSocket) m.invoke(device, 1);
+            clientSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
             clientSocket.connect();
 
             textCurrentStatus.setText("Подключение успешно");
@@ -364,12 +363,14 @@ public class MainActivity extends AppCompatActivity{
     public void buttonCloseClick(View view){ }
 
 
+
     //переход в упрщенный режим управления
     public void buttonEasyModeActivate(View view){
         Intent intent = new Intent(MainActivity.this, EasyMode.class);
-        intent.putExtra("MACadress", MACadress);
+        intent.putExtra("MACaddress", MACaddress);
         startActivity(intent);
     }
+
 
 }
 

@@ -15,7 +15,7 @@ public class EasyMode extends Activity {
 
     public EditText userMAC;
 
-    private String MACadress = "00:00:00:00:00";
+    private String MACaddress = "00:00:00:00:00";
 
     @Override
     protected void onCreate(Bundle savedInstances){
@@ -26,23 +26,23 @@ public class EasyMode extends Activity {
 
         //получаем значение MAC адреса с предыдущего окна, и в случае неудачи заполняет его нулями
         try{
-            MACadress = getIntent().getExtras().getString("MACadress", "00:00:00:00:00");
+            MACaddress = getIntent().getExtras().getString("MACaddress", "00:00:00:00:00");
         }
         catch(NullPointerException e){
-            MACadress = "00:00:00:00:00";
+            MACaddress = "00:00:00:00:00";
         }
 
         userMAC = (EditText) findViewById(R.id.editMAC);
-        userMAC.setText(MACadress);
+        userMAC.setText(MACaddress);
     }
 
     public void onClickBack(View view){
         Intent intent = new Intent(EasyMode.this, MainActivity.class);
-        intent.putExtra("MACadress", MACadress);
+        intent.putExtra("MACaddress", MACaddress);
         startActivity(intent);
     }
 
     public void onClickAccept(View view){
-        MACadress = userMAC.getText().toString();
+        MACaddress = userMAC.getText().toString();
     }
 }
