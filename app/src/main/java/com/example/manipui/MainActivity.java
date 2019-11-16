@@ -37,54 +37,41 @@ public class MainActivity extends AppCompatActivity{
     private UUID myUUID;
 
 
-    // коды для передачи сигналов
-    //
-    // все коды представленны в виде 4-х цифр
-    // 1-я цифра указывает на часть, которя должна двигаться
-    // (1 - первый локоть; 2 - второй локоть; 3 - платформа; 4 - ковш )
-    //
-    // 2-я цифра пока-что никак не использутся
-    //
-    // 3-я цифра указывает на действие
-    // (0 - какое-нибудь действие; 1 - обратное ему действие)
-    //
-    // 4-я цифра используется для старта/остановки действия
-
     /*
     СИГНАЛЫ ДЛЯ ПЕРВОГО ЛОКТЯ
      */
-    private final int FIRST_ELBOW_SPREAD_START  =  1000;
-    private final int FIRST_ELBOW_SPREAD_STOP   =  1001;
+    private final String FIRST_ELBOW_SPREAD_START  =  "01";
+    private final String FIRST_ELBOW_SPREAD_STOP   =  "00";
 
-    private final int FIRST_ELBOW_SLIDE_START   =  1010;
-    private final int FIRST_ELBOW_SLIDE_STOP    =  1011;
+    private final String FIRST_ELBOW_SLIDE_START   =  "02";
+    private final String FIRST_ELBOW_SLIDE_STOP    =  "00";
 
     /*
     СИГНАЛЫ ДЛЯ ВТОРОГО ЛОКТЯ
      */
-    private final int SECOND_ELBOW_SPREAD_START =  2000;
-    private final int SECOND_ELBOW_SPREAD_STOP  =  2001;
+    private final String SECOND_ELBOW_SPREAD_START =  "03";
+    private final String SECOND_ELBOW_SPREAD_STOP  =  "00";
 
-    private final int SECOND_ELBOW_SLIDE_START  =  2010;
-    private final int SECOND_ELBOW_SLIDE_STOP   =  2011;
+    private final String SECOND_ELBOW_SLIDE_START  =  "04";
+    private final String SECOND_ELBOW_SLIDE_STOP   =  "00";
 
     /*
     СИГНАЛЫ ДЛЯ ПОВОРОТА ПЛАТФОРМЫ
      */
-    private final int PLATFORM_TURN_LEFT_START  =  1;
-    private final int PLATFORM_TURN_LEFT_STOP   =  3;
+    private final String PLATFORM_TURN_LEFT_START  =  "05";
+    private final String PLATFORM_TURN_LEFT_STOP   =  "00";
 
-    private final int PLATFORM_TURN_RIGHT_START =  2;
-    private final int PLATFORM_TURN_RIGHT_STOP  =  3;
+    private final String PLATFORM_TURN_RIGHT_START =  "06";
+    private final String PLATFORM_TURN_RIGHT_STOP  =  "00";
 
     /*
     СИГНАЛЫ ДЛЯ УПРАВЛЕНИЯ КОВШОМ
      */
-    private final int CLAWS_OPEN_START          =  4000;
-    private final int CLAWS_OPEN_STOP           =  4001;
+    private final String CLAWS_OPEN_START          =  "07";
+    private final String CLAWS_OPEN_STOP           =  "00";
 
-    private final int CLAWS_CLOSE_START         =  4010;
-    private final int CLAWS_CLOSE_STOP          =  4011;
+    private final String CLAWS_CLOSE_START         =  "08";
+    private final String CLAWS_CLOSE_STOP          =  "00";
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -313,11 +300,12 @@ public class MainActivity extends AppCompatActivity{
     }
 
     //метод для передачи данных
-    private void sendCommandToManipulator(int signal){
+    private void sendCommandToManipulator(String signal){
         try{
             //получение выходного потока для передаи данных
             OutputStream outStream = clientSocket.getOutputStream();
-            outStream.write(signal);
+            byte[] messageToSend = signal.getBytes();
+            outStream.write(messageToSend);
         }catch(Exception e){
             textCurrentStatus.setText("Ошибка отправки\nданных");
         }
